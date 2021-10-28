@@ -1,0 +1,2 @@
+build project for android:
+    ng build --base-href=./
