@@ -23,9 +23,30 @@
     color: tomato;
 }
 
+.cell_black_selected_black {
+    width: 100px;
+    height: 100px;
+    background-color: purple;
+    color: tomato;
+}
+
 .cell_black_white {
     width: 100px;
     height: 100px;
     background-color: blue;
     color: whitesmoke;
+}
+
+.cell_black_selected_white {
+    width: 100px;
+    height: 100px;
+    background-color: purple;
+    color: whitesmoke;
+}
+
+.cell_option {
+    width: 100px;
+    height: 100px;
+    background-color: greenyellow;
+    color: darkblue;
 }

@@ -4,6 +4,9 @@
         <button class="cell_white" *ngIf="cell === 'White'">-</button>
         <button class="cell_black" *ngIf="cell === 'Black'">N</button>
         <button class="cell_black_white" (click)="checkerClick(row_index, column_index)" *ngIf="cell === 'Black_White'">W</button>
-        <button class="cell_black_black" *ngIf="cell === 'Black_Black'">B</button>
+        <button class="cell_black_black" (click)="checkerClick(row_index, column_index)" *ngIf="cell === 'Black_Black'">B</button>
+        <button class="cell_option" (click)="GoClick(row_index, column_index)" *ngIf="cell === 'Option'">Go</button>
+        <button class="cell_black_selected_white" *ngIf="cell === 'Black_Selected_White'">W</button>
+        <button class="cell_black_selected_black" *ngIf="cell === 'Black_Selected_Black'">B</button>
     </span>
 </div>
