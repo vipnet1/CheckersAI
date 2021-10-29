@@ -1,1 +1,9 @@
-<p>board works!</p>
+
+<div *ngFor="let row of cells; let row_index = index">
+    <span *ngFor="let cell of row; let column_index = index">
+        <button class="cell_white" *ngIf="cell === 'White'">-</button>
+        <button class="cell_black" *ngIf="cell === 'Black'">N</button>
+        <button class="cell_black_white" (click)="checkerClick(row_index, column_index)" *ngIf="cell === 'Black_White'">W</button>
+        <button class="cell_black_black" *ngIf="cell === 'Black_Black'">B</button>
+    </span>
+</div>
