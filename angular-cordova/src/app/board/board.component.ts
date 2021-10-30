@@ -12,7 +12,7 @@ export class BoardComponent implements OnInit {
   cells: string[][] = [];
   checker_to_move: [number, number];
 
-  is_human_rabbit: Boolean = true;
+  is_human_rabbit: Boolean = false;
   now_humans_turn: Boolean = true;
 
   constructor(private readonly verificationService: VerificationService, private readonly gameService: GameService,

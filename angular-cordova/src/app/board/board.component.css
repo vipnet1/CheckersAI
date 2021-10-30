@@ -5,48 +5,48 @@
 }
 
 .cell_white {
-    width: 100px;
-    height: 100px;
+    width: 75px;
+    height: 75px;
     background-color: white;
 }
 
 .cell_black {
-    width: 100px;
-    height: 100px;
+    width: 75px;
+    height: 75px;
     background-color: blue;
 }
 
 .cell_black_black {
-    width: 100px;
-    height: 100px;
+    width: 75px;
+    height: 75px;
     background-color: blue;
     color: tomato;
 }
 
 .cell_black_selected_black {
-    width: 100px;
-    height: 100px;
+    width: 75px;
+    height: 75px;
     background-color: purple;
     color: tomato;
 }
 
 .cell_black_white {
-    width: 100px;
-    height: 100px;
+    width: 75px;
+    height: 75px;
     background-color: blue;
     color: whitesmoke;
 }
 
 .cell_black_selected_white {
-    width: 100px;
-    height: 100px;
+    width: 75px;
+    height: 75px;
     background-color: purple;
     color: whitesmoke;
 }
 
 .cell_option {
-    width: 100px;
-    height: 100px;
+    width: 75px;
+    height: 75px;
     background-color: greenyellow;
     color: darkblue;
 }
