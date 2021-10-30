@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AiService } from './services/ai.service';
 import { GameService } from './services/game.service';
 import { VerificationService } from './services/verification.service';
 
@@ -11,7 +12,11 @@ export class BoardComponent implements OnInit {
   cells: string[][] = [];
   checker_to_move: [number, number];
 
-  constructor(private readonly verificationService: VerificationService, private readonly gameService: GameService) { }
+  is_human_rabbit: Boolean = false;
+  now_humans_turn: Boolean = true;
+
+  constructor(private readonly verificationService: VerificationService, private readonly gameService: GameService,
+    private readonly aiService: AiService) { }
 
   GoClick(row_index: number, column_index: number) {
     this.verificationService.cleanup_cells(this.cells);
@@ -25,18 +30,19 @@ export class BoardComponent implements OnInit {
 
   checkerClick(row_index: number, column_index: number): void {
     this.verificationService.cleanup_cells(this.cells);
+    const is_rabbit: Boolean = this.is_rabbit_clicked(row_index, column_index);
 
-    const res = this.verificationService
-    .getAllowedMoves(this.cells, row_index, column_index, this.is_rabbit_clicked(row_index, column_index));
-
-    if(res) {
-      this.checker_to_move = res;
+    if(is_rabbit !== this.is_human_rabbit) {
+      return;
     }
+
+    this.verificationService.show_human_move_options(this.cells, row_index, column_index, is_rabbit);
+    this.checker_to_move = [row_index, column_index];
   }
 
   ngOnInit(): void {
     this.gameService.game_init(this.cells);
-    this.verificationService.set_is_rabbit(false);
+    this.aiService.set_ai_side(!this.is_human_rabbit);
   }
 
   private is_rabbit_clicked(row_index: number, column_index: number) { return this.cells[row_index][column_index] === "Black_White"; }
