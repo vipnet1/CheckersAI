@@ -57,7 +57,7 @@ export class VerificationService {
     return [top_left, top_right, bottom_right, bottom_left];
   }
 
-  private get_wolf_moves(cells: string[][], row_index: number, column_index: number): [number, number][] {
+  get_wolf_moves(cells: string[][], row_index: number, column_index: number): [number, number][] {
     const bottom_right: [number, number] = row_index < 7 && column_index < 7 && cells[row_index + 1][column_index + 1] === "Black" 
     ? [row_index + 1, column_index + 1] : undefined;
 

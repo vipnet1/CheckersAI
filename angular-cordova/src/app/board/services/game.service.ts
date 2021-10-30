@@ -4,9 +4,13 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class GameService {
-  private rabbit_cell: [number, number]
+  private rabbit_cell: [number, number];
+  private wolf_cells: [number, number][];
 
   constructor() { }
+
+  get_rabbit_cell(): [number, number] { return this.rabbit_cell; }
+  get_wolf_cells(): [number, number][] { return this.wolf_cells; }
 
   make_a_move(cells: string[][], cell_from: [number, number], cell_to: [number, number]): [number, number] {
     const txt_cell_from: string = cells[cell_from[0]][cell_from[1]];
@@ -15,6 +19,15 @@ export class GameService {
 
     if(cells[cell_to[0]][cell_to[1]] === "Black_White") {
       this.rabbit_cell = [cell_to[0], cell_to[1]];
+    }
+    else {
+      for(const wolf_cell of this.wolf_cells) {
+        if(wolf_cell[0] === cell_from[0] && (wolf_cell[1] === cell_from[1])) {
+          wolf_cell[0] = cell_to[0];
+          wolf_cell[1] = cell_to[1];
+          break;
+        }
+      }
     }
 
     return this.rabbit_cell;
@@ -59,6 +72,7 @@ export class GameService {
 
     cells[7][4] = "Black_White";
     this.rabbit_cell = [7,4];
+    this.wolf_cells = [[0,1],[0,3],[0,5],[0,7]];
   }
 
 }
