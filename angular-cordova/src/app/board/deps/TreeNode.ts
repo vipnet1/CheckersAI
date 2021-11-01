@@ -1,9 +1,15 @@
+import { Info } from "./Info";
 
-class TreeNode {
-    value: number;
+export class TreeNode {
+    info: Info;
     next_nodes: TreeNode[];
 
-    constructor(value: number) {
-        this.value = value;
+    constructor() {
+        this.next_nodes = [];
+    }
+
+    add(info?: number): TreeNode {
+        this.next_nodes.push(new TreeNode());
+        return this.next_nodes[-1];
     }
 }

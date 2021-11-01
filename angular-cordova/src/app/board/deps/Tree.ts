@@ -1,8 +1,10 @@
+import { Info } from "./Info";
+import { TreeNode } from "./TreeNode";
 
-class Tree {
+export class Tree {
     root: TreeNode;
 
     constructor() {
-        this.root = new TreeNode(undefined);
+        this.root = new TreeNode();
     }
 }
