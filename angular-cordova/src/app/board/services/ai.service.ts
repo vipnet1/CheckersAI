@@ -12,21 +12,30 @@ export class AiService {
   constructor(private readonly verificationService: VerificationService) { }
 
   calculate_best_decision(cells: string[][], rabbit_cell: [number, number], wolf_cells: [number, number][]): [number, number][] {
-    if(this.is_ai_rabbit) {
-      const move_options = this.verificationService.get_rabbit_moves(cells, rabbit_cell[0], rabbit_cell[1]);
-      for(const option of move_options) {
-        if(option !== undefined) {
-          return [rabbit_cell, option]
-        }
+    return this.is_ai_rabbit
+    ? this.calculate_rabbit_best_decision(cells, rabbit_cell, wolf_cells)
+    : this.calculate_wolfes_best_decision(cells, rabbit_cell, wolf_cells)
+  }
+
+  calculate_rabbit_best_decision(cells: string[][], rabbit_cell: [number, number], wolf_cells: [number, number][]): [number, number][] {
+    const move_options = this.verificationService.get_rabbit_moves(cells, rabbit_cell[0], rabbit_cell[1]);
+
+    for(const option of move_options) {
+      if(option !== undefined) {
+        return [rabbit_cell, option]
       }
     }
-    else {
-      for(const wolf_cell of wolf_cells) {
-        const move_options = this.verificationService.get_wolf_moves(cells, wolf_cell[0], wolf_cell[1]);
-        for(const option of move_options) {
-          if(option !== undefined) {
-            return [wolf_cell, option]
-          }
+
+    return undefined;
+  }
+
+  calculate_wolfes_best_decision(cells: string[][], rabbit_cell: [number, number], wolf_cells: [number, number][]): [number, number][] {
+    for(const wolf_cell of wolf_cells) {
+      const move_options = this.verificationService.get_wolf_moves(cells, wolf_cell[0], wolf_cell[1]);
+
+      for(const option of move_options) {
+        if(option !== undefined) {
+          return [wolf_cell, option]
         }
       }
     }

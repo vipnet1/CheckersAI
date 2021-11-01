@@ -10,6 +10,8 @@ import { VerificationService } from './services/verification.service';
 })
 export class BoardComponent implements OnInit {
   cells: string[][] = [];
+
+  //last seleted human checker indexes
   checker_to_move: [number, number];
 
   is_human_rabbit: Boolean = false;
@@ -18,11 +20,16 @@ export class BoardComponent implements OnInit {
   constructor(private readonly verificationService: VerificationService, private readonly gameService: GameService,
     private readonly aiService: AiService) { }
 
+    ngOnInit(): void {
+      this.gameService.game_init(this.cells);
+      this.aiService.set_ai_side(!this.is_human_rabbit);
+    }
+
   play(row_index: number, column_index: number) {
     this.verificationService.cleanup_cells(this.cells);
 
-    const rabbit_cell: [number, number] = this.gameService
-    .make_a_move(this.cells, [this.checker_to_move[0], this.checker_to_move[1]], [row_index, column_index]);
+    this.gameService.make_a_move(this.cells, [this.checker_to_move[0], this.checker_to_move[1]], [row_index, column_index]);
+    const rabbit_cell: [number, number] = this.gameService.get_rabbit_cell();
 
     const rabbitMoves: [number, number][] = this.verificationService.get_rabbit_moves(this.cells, rabbit_cell[0], rabbit_cell[1]);
     const game_state: number = this.gameService.check_game_state(this.cells, rabbitMoves);
@@ -60,13 +67,13 @@ export class BoardComponent implements OnInit {
     const best_decision: [number, number][] = this.aiService
     .calculate_best_decision(this.cells, this.gameService.get_rabbit_cell(), this.gameService.get_wolf_cells());
 
+    if(!best_decision) {
+      window.location.reload();
+      return;
+    }
+
     this.checker_to_move = best_decision[0];
     this.play(best_decision[1][0], best_decision[1][1]);
-  }
-
-  ngOnInit(): void {
-    this.gameService.game_init(this.cells);
-    this.aiService.set_ai_side(!this.is_human_rabbit);
   }
 
   private is_rabbit_clicked(row_index: number, column_index: number) { return this.cells[row_index][column_index] === "Black_White"; }

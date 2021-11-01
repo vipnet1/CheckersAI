@@ -8,6 +8,7 @@ export class VerificationService {
 
   constructor() { }
 
+  //return cells to state before clicking them
   cleanup_cells(cells: string[][]): void {
     for(const cleanup_cell of this.cells_cleanup_cache) {
       cells[cleanup_cell[0]][cleanup_cell[1]] = cleanup_cell[2];
@@ -15,6 +16,7 @@ export class VerificationService {
     this.cells_cleanup_cache = [];
   }
 
+  //show needed info on checker click visually
   show_human_move_options(cells: string[][], row_index: number, column_index: number, isRabbitClicked: Boolean): void {
     let move_results = undefined;
     if(isRabbitClicked) {

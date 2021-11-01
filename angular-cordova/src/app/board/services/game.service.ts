@@ -12,11 +12,12 @@ export class GameService {
   get_rabbit_cell(): [number, number] { return this.rabbit_cell; }
   get_wolf_cells(): [number, number][] { return this.wolf_cells; }
 
-  make_a_move(cells: string[][], cell_from: [number, number], cell_to: [number, number]): [number, number] {
+  make_a_move(cells: string[][], cell_from: [number, number], cell_to: [number, number]): void {
     const txt_cell_from: string = cells[cell_from[0]][cell_from[1]];
     cells[cell_from[0]][cell_from[1]] = "Black";
     cells[cell_to[0]][cell_to[1]] = txt_cell_from;
 
+    // remember new rabbit/wolfes cell positons
     if(cells[cell_to[0]][cell_to[1]] === "Black_White") {
       this.rabbit_cell = [cell_to[0], cell_to[1]];
     }
@@ -29,10 +30,9 @@ export class GameService {
         }
       }
     }
-
-    return this.rabbit_cell;
   }
 
+  //check if someone won
   check_game_state(cells: string[][], rabbitMoves: [number, number][]): number {
     if(this.rabbit_cell[0] === 0) {
       return 1;

@@ -1,9 +1,9 @@
 
 class TreeNode {
-    value: any;
+    value: number;
     next_nodes: TreeNode[];
 
-    constructor(value: any) {
+    constructor(value: number) {
         this.value = value;
     }
 }
