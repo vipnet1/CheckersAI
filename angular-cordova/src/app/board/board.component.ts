@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AiService } from './services/ai.service';
+import { AiService } from './services/AI/ai.service';
 import { GameService } from './services/game.service';
 import { VerificationService } from './services/verification.service';
 
@@ -14,7 +14,7 @@ export class BoardComponent implements OnInit {
   //last seleted human checker indexes
   checker_to_move: [number, number];
 
-  is_human_rabbit: Boolean = false;
+  is_human_rabbit: Boolean = true;
   now_humans_turn: Boolean = true;
 
   constructor(private readonly verificationService: VerificationService, private readonly gameService: GameService,
