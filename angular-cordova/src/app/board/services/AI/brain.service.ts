@@ -8,7 +8,11 @@ export class BrainService {
 
   constructor(private readonly verificationService: VerificationService) { }
 
-  get_rabbit_move_direction_points(cpy_cells: string[][], cpy_rabbit_cell: [number, number]): number {
+  calculate_points(cpy_cells: string[][], cpy_rabbit_cell: [number, number]): number {
+    return this.get_rabbit_move_direction_points(cpy_cells, cpy_rabbit_cell);
+  }
+
+  private get_rabbit_move_direction_points(cpy_cells: string[][], cpy_rabbit_cell: [number, number]): number {
     const move_options = this.verificationService.get_rabbit_moves(cpy_cells, cpy_rabbit_cell[0], cpy_rabbit_cell[1]);
 
     let points = 0;
