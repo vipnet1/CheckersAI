@@ -20,6 +20,7 @@ export class AiService {
     const cpy_wolf_cells: [number, number][] = wolf_cells.map((cell) => [...cell]);
 
     const bestDecision: [[number,number],[number,number],number]  = this.minimax(this.nr_steps_lookup, this.is_ai_rabbit, cpy_cells, cpy_rabbit_cell, cpy_wolf_cells);
+    console.log(bestDecision);
     return [bestDecision[0], bestDecision[1]];
   }
 
@@ -35,7 +36,11 @@ export class AiService {
       const rabbitMoves = this.verificationService.get_rabbit_moves(cells, rabbit_cell[0], rabbit_cell[1]);
       for(const move of rabbitMoves) {
         if(move) {
-          const points: number = this.minimax(depth - 1, false, cells, move, wolf_cells)[2];
+          const cpy_cells: string[][] = cells.map((row) => row.map((cell) => cell));
+          cpy_cells[move[0]][move[1]] = "Black_White";
+          cpy_cells[rabbit_cell[0]][rabbit_cell[1]] = "Black";
+
+          const points: number = this.minimax(depth - 1, false, cpy_cells, move, wolf_cells)[2];
           if(points > maxEval) {
             maxEval = points;
             best_from = rabbit_cell;
@@ -56,7 +61,10 @@ export class AiService {
           if(move) {
             const cpy_wolfes_cells: [number,number][] = [[...wolf_cells[0]],[...wolf_cells[1]],[...wolf_cells[2]],[...wolf_cells[3]]];
             cpy_wolfes_cells[i] = move;
-            const points: number = this.minimax(depth - 1, true, cells, rabbit_cell, cpy_wolfes_cells)[2];
+            const cpy_cells: string[][] = cells.map((row) => row.map((cell) => cell));
+            cpy_cells[move[0]][move[1]] = "Black_Black";
+            cpy_cells[wolf_cells[i][0]][wolf_cells[i][1]] = "Black";
+            const points: number = this.minimax(depth - 1, true, cpy_cells, rabbit_cell, cpy_wolfes_cells)[2];
             if(points < minEval) {
               minEval = points;
               best_from = wolf_cells[i];
