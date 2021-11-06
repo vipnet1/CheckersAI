@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { GameService } from '../game.service';
 import { VerificationService } from '../verification.service';
 import { BrainService } from './brain.service';
 
@@ -6,12 +7,13 @@ import { BrainService } from './brain.service';
   providedIn: 'root'
 })
 export class AiService {
-  nr_steps_lookup: number = 2;
+  nr_steps_lookup: number = 6;
   is_ai_rabbit: Boolean;
 
   set_ai_side(is_ai_rabbit: Boolean): void { this.is_ai_rabbit = is_ai_rabbit; }
 
-  constructor(private readonly verificationService: VerificationService, private readonly brainService: BrainService) { }
+  constructor(private readonly verificationService: VerificationService, private readonly brainService: BrainService,
+    private readonly gameService: GameService) { }
 
   calculate_best_decision(cells: string[][], rabbit_cell: [number, number], wolf_cells: [number, number][]): [number, number][] {
 
@@ -27,17 +29,27 @@ export class AiService {
 
   // returns tuple of format: [move_from, move_to, pointsOfBestDecision]
   private minimax(depth: number, isMax: Boolean, cells: string[][], rabbit_cell: [number, number], wolf_cells: [number,number][]): [[number,number], [number,number], number] {
+    const rabbitMoves: [number,number][] = this.verificationService.get_rabbit_moves(cells, rabbit_cell[0], rabbit_cell[1]);
+    const allWolfesMoves: [number,number][][] = [];
+    for(const wolf of wolf_cells) {
+      allWolfesMoves.push(this.verificationService.get_wolf_moves(cells, wolf[0], wolf[1]));
+    }
+
+    // if one can win stop at this node, no need to expand the entire tree
+    const state: number = this.gameService.check_game_state(cells, rabbitMoves, allWolfesMoves);
+    if(state === 1 && isMax) return [undefined, undefined, Infinity];
+    if(state === -1 && !isMax) return [undefined, undefined, -Infinity];
+
     if(depth === 0) {
       return [undefined, undefined, this.brainService.calculate_points(cells, rabbit_cell, wolf_cells)];
     }
 
     // to store were from/to move
-    let best_from: [number,number] = [-1,-1];
-    let best_to: [number,number] = [-1,-1];
+    let best_from: [number,number] = undefined;
+    let best_to: [number,number] = undefined;
 
     if(isMax) {
       let maxEval: number = -Infinity;
-      const rabbitMoves = this.verificationService.get_rabbit_moves(cells, rabbit_cell[0], rabbit_cell[1]);
 
       for(const move of rabbitMoves) {
         if(move) {
@@ -63,9 +75,8 @@ export class AiService {
     else {
       let minEval: number = Infinity;
 
-      for(let i=0;i<4;i++) {
-        const wolfesMoves = this.verificationService.get_wolf_moves(cells, wolf_cells[i][0], wolf_cells[i][1]);
-        for(const move of wolfesMoves) {
+      for(let i:number=0; i < allWolfesMoves.length; i++) {
+        for(const move of allWolfesMoves[i]) {
           if(move) {
             const cells_backup: [number,number,string][] = [[wolf_cells[i][0], wolf_cells[i][1], "Black_Black"],[move[0],move[1],"Black"]];
             cells[move[0]][move[1]] = "Black_Black";
@@ -88,6 +99,7 @@ export class AiService {
           }
         }
       }
+
       return [best_from, best_to, minEval];
     }
   }

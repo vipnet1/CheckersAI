@@ -25,25 +25,36 @@ export class BrainService {
     if you want to retrieve for all of them create a loop and call the function on each of them.(iterate wolf_cells)
   */
   calculate_points(cells: string[][], rabbit_cell: [number, number], wolf_cells: [number,number][]): number {
-    return this.get_rabbit_move_direction_points(cells, rabbit_cell)
-     + this.example_function(wolf_cells);
+    return this.get_rabbit_move_direction_points(cells, rabbit_cell) + this.get_rabbit_higher_row_points(rabbit_cell);
   }
 
   private get_rabbit_move_direction_points(cells: string[][], rabbit_cell: [number, number]): number {
     const move_options = this.verificationService.get_rabbit_moves(cells, rabbit_cell[0], rabbit_cell[1]);
 
-    let points = 0;
+    let open_directions = 0;
     for(const option of move_options) {
       if(option !== undefined) {
-        points++;
+        open_directions++;
       }
     }
 
-    return points;
+    switch(open_directions) {
+      case 1:
+        return 0.5;
+      case 2:
+        return 4;
+      case 3:
+        return 5;
+      case 4:
+        return 5.5;
+      default:
+        return -1;
+    }
   }
 
-  private example_function(wolf_cells): number {
-    return wolf_cells[0][1] + wolf_cells[1][1] +wolf_cells[2][1] +wolf_cells[3][1];
+  // give points when going towards destination
+  private get_rabbit_higher_row_points(rabbit_cell: [number, number]) {
+    return (7 - rabbit_cell[0]) * 1.5;
   }
 
 }
