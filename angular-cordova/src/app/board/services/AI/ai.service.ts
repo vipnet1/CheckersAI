@@ -6,7 +6,7 @@ import { BrainService } from './brain.service';
   providedIn: 'root'
 })
 export class AiService {
-  nr_steps_lookup: number = 1;
+  nr_steps_lookup: number = 2;
   is_ai_rabbit: Boolean;
 
   set_ai_side(is_ai_rabbit: Boolean): void { this.is_ai_rabbit = is_ai_rabbit; }
@@ -15,6 +15,7 @@ export class AiService {
 
   calculate_best_decision(cells: string[][], rabbit_cell: [number, number], wolf_cells: [number, number][]): [number, number][] {
 
+    // copy data so we dont change it accidently
     const cpy_cells: string[][] = cells.map((row) => row.map((cell) => cell));
     const cpy_rabbit_cell: [number, number] = [...rabbit_cell];
     const cpy_wolf_cells: [number, number][] = wolf_cells.map((cell) => [...cell]);
@@ -27,16 +28,17 @@ export class AiService {
   // returns tuple of format: [move_from, move_to, pointsOfBestDecision]
   private minimax(depth: number, isMax: Boolean, cells: string[][], rabbit_cell: [number, number], wolf_cells: [number,number][]): [[number,number], [number,number], number] {
     if(depth === 0) {
-      return [[-1,-1],[-1,-1],this.brainService.calculate_points(cells, rabbit_cell)];
+      return [undefined, undefined, this.brainService.calculate_points(cells, rabbit_cell, wolf_cells)];
     }
 
+    // to store were from/to move
     let best_from: [number,number] = [-1,-1];
     let best_to: [number,number] = [-1,-1];
 
     if(isMax) {
       let maxEval: number = -Infinity;
-
       const rabbitMoves = this.verificationService.get_rabbit_moves(cells, rabbit_cell[0], rabbit_cell[1]);
+
       for(const move of rabbitMoves) {
         if(move) {
           const cells_backup: [number,number,string][] = [[rabbit_cell[0], rabbit_cell[1], "Black_White"],[move[0],move[1],"Black"]];
@@ -65,12 +67,12 @@ export class AiService {
         const wolfesMoves = this.verificationService.get_wolf_moves(cells, wolf_cells[i][0], wolf_cells[i][1]);
         for(const move of wolfesMoves) {
           if(move) {
-            const backup_wolf_cell: [number,number] = wolf_cells[i];
-            wolf_cells[i] = move;
-
             const cells_backup: [number,number,string][] = [[wolf_cells[i][0], wolf_cells[i][1], "Black_Black"],[move[0],move[1],"Black"]];
             cells[move[0]][move[1]] = "Black_Black";
             cells[wolf_cells[i][0]][wolf_cells[i][1]] = "Black";
+
+            const backup_wolf_cell: [number,number] = wolf_cells[i];
+            wolf_cells[i] = move;
 
             const points: number = this.minimax(depth - 1, true, cells, rabbit_cell, wolf_cells)[2];
 
