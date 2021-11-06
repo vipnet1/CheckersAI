@@ -54,6 +54,8 @@ export class BrainService {
 
   // give points when going towards destination
   private get_rabbit_higher_row_points(rabbit_cell: [number, number]) {
+    if(rabbit_cell[0] === 0) return Infinity;
+    if(rabbit_cell[0] === 1) return 10;
     return (7 - rabbit_cell[0]) * 1.5;
   }
 
