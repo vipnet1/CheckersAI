@@ -33,18 +33,38 @@ export class GameService {
   }
 
   //check if someone won
-  check_game_state(cells: string[][], rabbitMoves: [number, number][]): number {
+  check_game_state(cells: string[][], rabbitMoves: [number, number][], allWolfesMoves: [number,number][][]): number {
+    // if rabbit on first row he's won
     if(this.rabbit_cell[0] === 0) {
       return 1;
     }
 
+    // if rabbit can't move wolfes won
+    let rabbit_has_move: Boolean = false;
     for(let idx: number = 0; idx < 4; idx++) {
       if(rabbitMoves[idx] !== undefined) {
-        return 0;
+        rabbit_has_move = true;
+        break;
       }
     }
+    
+    if(!rabbit_has_move) return -1;
 
-    return -1;
+    // if wolfes have no options to move rabbit won
+    let wolf_has_move: Boolean = false;
+    for(const wolfMove of allWolfesMoves) {
+      for(const move of wolfMove) {
+        if(move) {
+          wolf_has_move = true;
+          break;
+        }
+      }
+      if(wolf_has_move) break;
+    }
+
+    if(!wolf_has_move) return 1;
+
+    return 0;
   }
 
   game_init(cells: string[][]): void {

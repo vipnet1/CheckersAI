@@ -32,7 +32,13 @@ export class BoardComponent implements OnInit {
     const rabbit_cell: [number, number] = this.gameService.get_rabbit_cell();
 
     const rabbitMoves: [number, number][] = this.verificationService.get_rabbit_moves(this.cells, rabbit_cell[0], rabbit_cell[1]);
-    const game_state: number = this.gameService.check_game_state(this.cells, rabbitMoves);
+
+    const allWolfesMoves: [number,number][][] = [];
+    for(const wolf of this.gameService.get_wolf_cells()) {
+      allWolfesMoves.push(this.verificationService.get_wolf_moves(this.cells, wolf[0], wolf[1]));
+    }
+
+    const game_state: number = this.gameService.check_game_state(this.cells, rabbitMoves, allWolfesMoves);
     if(game_state !== 0) {
       window.location.reload();
       return;
@@ -67,7 +73,7 @@ export class BoardComponent implements OnInit {
     const best_decision: [number, number][] = this.aiService
     .calculate_best_decision(this.cells, this.gameService.get_rabbit_cell(), this.gameService.get_wolf_cells());
 
-    if(!best_decision) {
+    if(best_decision[0] === undefined) {
       window.location.reload();
       return;
     }

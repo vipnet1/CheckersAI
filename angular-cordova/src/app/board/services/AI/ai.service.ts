@@ -63,7 +63,7 @@ export class AiService {
           cells[cells_backup[0][0]][cells_backup[0][1]] = cells_backup[0][2];
           cells[cells_backup[1][0]][cells_backup[1][1]] = cells_backup[1][2];
 
-          if(points > maxEval) {
+          if(points >= maxEval) {
             maxEval = points;
             best_from = rabbit_cell;
             best_to = move;
@@ -91,7 +91,7 @@ export class AiService {
             cells[cells_backup[0][0]][cells_backup[0][1]] = cells_backup[0][2];
             cells[cells_backup[1][0]][cells_backup[1][1]] = cells_backup[1][2];
 
-            if(points < minEval) {
+            if(points <= minEval) {
               minEval = points;
               best_from = wolf_cells[i];
               best_to = move;
