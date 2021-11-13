@@ -16,11 +16,13 @@ export class BoardComponent implements OnInit {
 
   is_human_rabbit: Boolean = true;
   now_humans_turn: Boolean = true;
+  human_steps: number;
 
   constructor(private readonly verificationService: VerificationService, private readonly gameService: GameService,
     private readonly aiService: AiService) { }
 
     ngOnInit(): void {
+      this.human_steps = 0;
       this.gameService.game_init(this.cells);
       this.aiService.set_ai_side(!this.is_human_rabbit);
     }
@@ -40,11 +42,21 @@ export class BoardComponent implements OnInit {
 
     const game_state: number = this.gameService.check_game_state(this.cells, rabbitMoves, allWolfesMoves);
     if(game_state !== 0) {
-      window.location.reload();
+      if((game_state === 1 && this.is_human_rabbit) || (game_state === -1 && !this.is_human_rabbit)) {
+
+        console.log('here')
+        fetch(`http://localhost:12345/stats/set?
+        lookup=${this.aiService.nr_steps_lookup}
+        &side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}
+        &steps=${this.human_steps}`)
+      }
+
+      //window.location.reload();
       return;
     }
 
     if(this.now_humans_turn) {
+      this.human_steps++;
       this.now_humans_turn = false;
       this.activateAI();
     }
