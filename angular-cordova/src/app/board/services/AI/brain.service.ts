@@ -59,6 +59,7 @@ export class BrainService {
     }
   }
 
+  // give wolfes points when move forward
   private get_wolfes_move_direction_points(wolf_cells: [number,number][]): number {
     return wolf_cells[0][0] + wolf_cells[1][0] + wolf_cells[2][0] + wolf_cells[3][0];
   }
@@ -89,6 +90,7 @@ export class BrainService {
   }
 
 
+  // wolfes should try to stay closer on the row
   private get_wolfes_move_together_points(rabbit_cell: [number, number], wolf_cells: [number,number][]) {
     let max_wolfes_on_row = 0;
     let wolf_total_row_distances = 0;
@@ -96,20 +98,21 @@ export class BrainService {
     const map = new Map();
     for(const wolf of wolf_cells) {
       if(map.has(wolf[0])) {
-        map[wolf[0]]++
+        map.set(wolf[0], map.get(wolf[0]) + 1);
+        //console.log(map.get(wolf[0]))
       }
       else {
-        map[wolf[0]] = 1
+        map.set(wolf[0], 1);
       }
 
-      if(map[wolf[0]] > max_wolfes_on_row) max_wolfes_on_row = map[wolf[0]]
+      if(map.get(wolf[0]) > max_wolfes_on_row) max_wolfes_on_row = map.get(wolf[0])
 
       for(const w of wolf_cells) {
         wolf_total_row_distances += Math.abs(w[0] - wolf[0])
       }
     }
 
-    if(max_wolfes_on_row === 4 && rabbit_cell[0] > wolf_cells[0][0]) return -Infinity;
+    if(max_wolfes_on_row === 4 && rabbit_cell[0] > wolf_cells[0][0]) return -1000;
 
     return wolf_total_row_distances;
   }
