@@ -27,8 +27,11 @@ export class BoardComponent implements OnInit {
       this.aiService.set_ai_side(!this.is_human_rabbit);
     }
 
-  play(row_index: number, column_index: number) {
+  async play(row_index: number, column_index: number) {
     this.verificationService.cleanup_cells(this.cells);
+
+    // uncomment to test fetch request
+    //fetch(`http://localhost:12345/stats/set?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}&steps=${this.human_steps}`);
 
     this.gameService.make_a_move(this.cells, [this.checker_to_move[0], this.checker_to_move[1]], [row_index, column_index]);
     const rabbit_cell: [number, number] = this.gameService.get_rabbit_cell();
@@ -43,15 +46,10 @@ export class BoardComponent implements OnInit {
     const game_state: number = this.gameService.check_game_state(this.cells, rabbitMoves, allWolfesMoves);
     if(game_state !== 0) {
       if((game_state === 1 && this.is_human_rabbit) || (game_state === -1 && !this.is_human_rabbit)) {
-
-        console.log('here')
-        fetch(`http://localhost:12345/stats/set?
-        lookup=${this.aiService.nr_steps_lookup}
-        &side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}
-        &steps=${this.human_steps}`)
+        await fetch(`http://localhost:12345/stats/set?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}&steps=${this.human_steps}`);
       }
 
-      //window.location.reload();
+      window.location.reload();
       return;
     }
 
