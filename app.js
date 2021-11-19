@@ -49,7 +49,7 @@ app.get('/stats', async (req, res) => {
         return
     }
 
-    const side = parseInt(req.query.side)
+    const side = req.query.side
     if(side !== 'wolfes' & side !== 'rabbit') {
         res.status(400).send('side should be wolfes or rabbit')
         return

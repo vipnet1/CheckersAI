@@ -37,6 +37,6 @@ module.exports = {
 
     DB_GetStats: async function(lookup, side) {
         const best_stat = await stats.findOne({lookup: lookup, side: side});
-        return best_stat ? best_stat.steps : -1
+        return best_stat ? best_stat.steps : '-';
     }
 }
