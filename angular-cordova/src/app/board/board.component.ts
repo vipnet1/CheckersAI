@@ -18,6 +18,8 @@ export class BoardComponent implements OnInit {
   now_humans_turn: Boolean = true;
   human_steps: number;
 
+  best_score_str: string = '-1';
+
   constructor(private readonly verificationService: VerificationService, private readonly gameService: GameService,
     private readonly aiService: AiService) { }
 
@@ -25,6 +27,28 @@ export class BoardComponent implements OnInit {
       this.human_steps = 0;
       this.gameService.game_init(this.cells);
       this.aiService.set_ai_side(!this.is_human_rabbit);
+    }
+
+    async onSideChanged(): Promise<void> {
+      this.aiService.set_ai_side(this.is_human_rabbit);
+      this.is_human_rabbit = !this.is_human_rabbit;
+      this.now_humans_turn = false;
+      fetch(`http://localhost:12345/stats?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}`)
+      .then(async response => {
+        this.best_score_str = await response.text();
+      });
+      this.activateAI();
+    }
+
+    onLookupChanged(newValue: number): void {
+      if(newValue > 0 && newValue < 9) {
+        this.aiService.nr_steps_lookup = newValue;
+      }
+
+      fetch(`http://localhost:12345/stats?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}`)
+      .then(async response => {
+        this.best_score_str = await response.text();
+      });
     }
 
   async play(row_index: number, column_index: number) {

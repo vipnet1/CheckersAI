@@ -1,4 +1,18 @@
 
+<label for="lookup"> AI nr steps lookup: </label>
+<input value="2" id="lookup" (input)="onLookupChanged($event.target.value)" type="number" min="1" max="8">
+<br><br>
+
+<label for="sides">Choose side: </label>
+<select (change)="onSideChanged()" id="sides">
+  <option value="rabbit">Rabbit</option>
+  <option value="wolfes">Wolfes</option>
+</select>
+
+<p>Best Score: {{best_score_str}}</p>
+
+<br><br><br>
+
 <div *ngFor="let row of cells; let row_index = index">
     <span *ngFor="let cell of row; let column_index = index">
         <button class="cell_white" *ngIf="cell === 'White'">-</button>

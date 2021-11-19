@@ -7,7 +7,7 @@ import { BrainService } from './brain.service';
   providedIn: 'root'
 })
 export class AiService {
-  nr_steps_lookup: number = 6;
+  nr_steps_lookup: number = 2;
   is_ai_rabbit: Boolean;
 
   set_ai_side(is_ai_rabbit: Boolean): void { this.is_ai_rabbit = is_ai_rabbit; }
