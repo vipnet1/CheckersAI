@@ -22,18 +22,15 @@ export class AiService {
     const cpy_rabbit_cell: [number, number] = [...rabbit_cell];
     const cpy_wolf_cells: [number, number][] = wolf_cells.map((cell) => [...cell]);
 
-    const bestDecision: [[number,number],[number,number],number]  = this.minimax(this.nr_steps_lookup, this.is_ai_rabbit, cpy_cells, cpy_rabbit_cell, cpy_wolf_cells);
+    const bestDecision: [[number,number],[number,number],number]  = this.alphaBetaPruning(this.nr_steps_lookup, this.is_ai_rabbit, -Infinity, +Infinity, cpy_cells, cpy_rabbit_cell, cpy_wolf_cells);
     console.log(bestDecision);
     return [bestDecision[0], bestDecision[1]];
   }
 
   // returns tuple of format: [move_from, move_to, pointsOfBestDecision]
-  private minimax(depth: number, isMax: Boolean, cells: string[][], rabbit_cell: [number, number], wolf_cells: [number,number][]): [[number,number], [number,number], number] {
+  private alphaBetaPruning(depth: number, isMax: Boolean, alpha: number, beta: number, cells: string[][], rabbit_cell: [number, number], wolf_cells: [number,number][]): [[number,number], [number,number], number] {
     const rabbitMoves: [number,number][] = this.verificationService.get_rabbit_moves(cells, rabbit_cell[0], rabbit_cell[1]);
-    const allWolfesMoves: [number,number][][] = [];
-    for(const wolf of wolf_cells) {
-      allWolfesMoves.push(this.verificationService.get_wolf_moves(cells, wolf[0], wolf[1]));
-    }
+    const allWolfesMoves: [number,number][][] = wolf_cells.map((wolf) => this.verificationService.get_wolf_moves(cells, wolf[0], wolf[1]));
 
     // if one can win stop at this node, no need to expand the entire tree
     const state: number = this.gameService.check_game_state(cells, rabbitMoves, allWolfesMoves);
@@ -58,7 +55,7 @@ export class AiService {
           cells[move[0]][move[1]] = "Black_White";
           cells[rabbit_cell[0]][rabbit_cell[1]] = "Black";
 
-          const points: number = this.minimax(depth - 1, false, cells, move, wolf_cells)[2];
+          const points: number = this.alphaBetaPruning(depth - 1, false, alpha, beta, cells, move, wolf_cells)[2];
 
           cells[cells_backup[0][0]][cells_backup[0][1]] = cells_backup[0][2];
           cells[cells_backup[1][0]][cells_backup[1][1]] = cells_backup[1][2];
@@ -68,6 +65,12 @@ export class AiService {
             best_from = rabbit_cell;
             best_to = move;
           }
+
+          alpha = points > alpha ? points : alpha;
+          if(beta <= alpha) {
+            break;
+          }
+
         }
       }
       return [best_from, best_to, maxEval];
@@ -85,7 +88,7 @@ export class AiService {
             const backup_wolf_cell: [number,number] = wolf_cells[i];
             wolf_cells[i] = move;
 
-            const points: number = this.minimax(depth - 1, true, cells, rabbit_cell, wolf_cells)[2];
+            const points: number = this.alphaBetaPruning(depth - 1, true, alpha, beta, cells, rabbit_cell, wolf_cells)[2];
 
             wolf_cells[i] = backup_wolf_cell;
             cells[cells_backup[0][0]][cells_backup[0][1]] = cells_backup[0][2];
@@ -96,6 +99,12 @@ export class AiService {
               best_from = wolf_cells[i];
               best_to = move;
             }
+
+            beta = points < beta ? points : beta;
+            if(beta <= alpha) {
+              break;
+            }
+
           }
         }
       }
