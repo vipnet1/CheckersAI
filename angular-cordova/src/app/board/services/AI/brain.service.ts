@@ -5,7 +5,8 @@ import { VerificationService } from '../verification.service';
   providedIn: 'root'
 })
 export class BrainService {
-  WOLF_ROW_CELL_DIFF_POINTS: number = 2
+  readonly WOLF_ROW_CELL_DIFF_POINTS: number = 2;
+  public static readonly CUSTOM_INFINITY = 1000000; //not using Infinity but this so ai will take best decision, even when he knows he's gona lose
 
   constructor(private readonly verificationService: VerificationService) { }
 
@@ -45,7 +46,7 @@ export class BrainService {
 
     switch(open_directions) {
       case 0:
-        return -Infinity;
+        return -BrainService.CUSTOM_INFINITY;
       case 1:
         return 1;
       case 2:
@@ -59,7 +60,7 @@ export class BrainService {
     }
   }
 
-  // give wolfes points when move forward
+  // give wolfes points when move forward(so rabbit ai won't spend time jumping around - as the time goes his situation worse)
   private get_wolfes_move_direction_points(wolf_cells: [number,number][]): number {
     return wolf_cells[0][0] + wolf_cells[1][0] + wolf_cells[2][0] + wolf_cells[3][0];
   }
@@ -77,7 +78,7 @@ export class BrainService {
         case 1: return 20;
         case 2: return 40;
         case 3: return 60;
-        case 4: return Infinity;
+        case 4: return BrainService.CUSTOM_INFINITY;
         default: return 0;
       }
 
@@ -85,7 +86,7 @@ export class BrainService {
 
   // give points when going towards destination
   private get_rabbit_higher_row_points(rabbit_cell: [number, number]) {
-    if(rabbit_cell[0] === 0) return Infinity;
+    if(rabbit_cell[0] === 0) return BrainService.CUSTOM_INFINITY;
     return (7 - rabbit_cell[0]) * 2.5;
   }
 
@@ -112,9 +113,10 @@ export class BrainService {
       }
     }
 
-    if(max_wolfes_on_row === 4 && rabbit_cell[0] > wolf_cells[0][0]) return -1000;
+    if(max_wolfes_on_row === 4 && rabbit_cell[0] > wolf_cells[0][0]) return -10000;
+    const wolf_row_points = -50 * max_wolfes_on_row;
 
-    return wolf_total_row_distances;
+    return wolf_total_row_distances + wolf_row_points;
   }
 
 }

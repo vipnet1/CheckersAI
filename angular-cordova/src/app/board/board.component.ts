@@ -67,7 +67,7 @@ export class BoardComponent implements OnInit {
       allWolfesMoves.push(this.verificationService.get_wolf_moves(this.cells, wolf[0], wolf[1]));
     }
 
-    const game_state: number = this.gameService.check_game_state(this.cells, rabbitMoves, allWolfesMoves);
+    const game_state: number = this.gameService.check_game_state(rabbitMoves, allWolfesMoves);
     if(game_state !== 0) {
       if((game_state === 1 && this.is_human_rabbit) || (game_state === -1 && !this.is_human_rabbit)) {
         await fetch(`http://localhost:12345/stats/set?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}&steps=${this.human_steps}`);

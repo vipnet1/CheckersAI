@@ -33,7 +33,7 @@ export class GameService {
   }
 
   //check if someone won
-  check_game_state(cells: string[][], rabbitMoves: [number, number][], allWolfesMoves: [number,number][][]): number {
+  check_game_state(rabbitMoves: [number, number][], allWolfesMoves: [number,number][][]): number {
     // if rabbit on first row he's won
     if(this.rabbit_cell[0] === 0) {
       return 1;
@@ -65,6 +65,21 @@ export class GameService {
     if(!wolf_has_move) return 1;
 
     return 0;
+  }
+
+  public check_game_state_ai(currRabbitCell: [number, number], currWolfCells: [number, number][], rabbitMoves: [number, number][], allWolfesMoves: [number,number][][]): number {
+    const rabbit_cell_cpy = this.rabbit_cell;
+    const wolf_cells_cpy = this.wolf_cells;
+
+    this.rabbit_cell = currRabbitCell;
+    this.wolf_cells = currWolfCells;
+
+    const res: number = this.check_game_state(rabbitMoves, allWolfesMoves);
+
+    this.rabbit_cell = rabbit_cell_cpy;
+    this.wolf_cells = wolf_cells_cpy;
+
+    return res;
   }
 
   game_init(cells: string[][]): void {

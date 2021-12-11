@@ -33,9 +33,9 @@ export class AiService {
     const allWolfesMoves: [number,number][][] = wolf_cells.map((wolf) => this.verificationService.get_wolf_moves(cells, wolf[0], wolf[1]));
 
     // if one can win stop at this node, no need to expand the entire tree
-    const state: number = this.gameService.check_game_state(cells, rabbitMoves, allWolfesMoves);
-    if(state === 1 && isMax) return [undefined, undefined, Infinity];
-    if(state === -1 && !isMax) return [undefined, undefined, -Infinity];
+    const state: number = this.gameService.check_game_state_ai(rabbit_cell, wolf_cells, rabbitMoves, allWolfesMoves);
+    if(state === 1 && isMax) return [undefined, undefined, BrainService.CUSTOM_INFINITY];
+    if(state === -1 && !isMax) return [undefined, undefined, -BrainService.CUSTOM_INFINITY];
 
     if(depth === 0) {
       return [undefined, undefined, this.brainService.calculate_points(cells, rabbit_cell, wolf_cells)];
@@ -64,6 +64,10 @@ export class AiService {
             maxEval = points;
             best_from = rabbit_cell;
             best_to = move;
+          }
+          
+          if(maxEval >= BrainService.CUSTOM_INFINITY * 0.5) {
+            return [best_from, best_to, maxEval];
           }
 
           alpha = points > alpha ? points : alpha;
@@ -98,6 +102,10 @@ export class AiService {
               minEval = points;
               best_from = wolf_cells[i];
               best_to = move;
+            }
+
+            if(minEval <= -BrainService.CUSTOM_INFINITY * 0.5) {
+              return [best_from, best_to, minEval];
             }
 
             beta = points < beta ? points : beta;
