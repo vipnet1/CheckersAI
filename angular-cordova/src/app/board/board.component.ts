@@ -35,7 +35,6 @@ export class BoardComponent implements OnInit {
       this.aiService.set_ai_side(this.is_human_rabbit);
       this.is_human_rabbit = !this.is_human_rabbit;
       this.now_humans_turn = false;
-      console.log(process.env.STATS_SERVER_URL);
       fetch(`${this.STATS_SERVER_URL}?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}`)
       .then(async response => {
         this.best_score_str = await response.text();
