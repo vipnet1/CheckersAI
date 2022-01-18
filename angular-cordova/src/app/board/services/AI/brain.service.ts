@@ -113,25 +113,33 @@ export class BrainService {
       })
     })
 
-    if(this.isPathToEndExists(rabbit_cell, wolf_cells, cells)) {
-      return 10000;
+    const result: [string, number] = this.isPathToEndExists(rabbit_cell, wolf_cells, cells)
+    if(result[0] !== "None") {
+      const score = 500 - result[1] * 30;
+
+      if(score < 80) {
+        return 80
+      }
+
+      return score;
     }
 
     return 0;
   }
 
-  private isPathToEndExists(cell: [number, number], wolf_cells: [number,number][], cells: boolean[][]): boolean {
+  // returns: [direction to move to open path, number cells to final cell]
+  private isPathToEndExists(cell: [number, number], wolf_cells: [number,number][], cells: boolean[][]): [string, number] {
     if(cell[0] === 0) {
-      return true;
+      return ["YES", 0];
     }
 
     // top-right
     if(cell[0] > 0 && cell[1] < 7 && !cells[cell[0] - 1][cell[1] + 1] && !this.isOnWolf([cell[0] - 1, cell[1] + 1], wolf_cells)) {
       cells[cell[0] - 1][cell[1] + 1] = true;
 
-      const result: boolean = this.isPathToEndExists([cell[0] - 1, cell[1] + 1], wolf_cells, cells);
-      if(result) {
-        return true;
+      const result: [string, number] = this.isPathToEndExists([cell[0] - 1, cell[1] + 1], wolf_cells, cells);
+      if(result[0] !== "None") {
+        return ["tr", ++result[1]];
       }
     }
 
@@ -140,9 +148,9 @@ export class BrainService {
     if(cell[0] > 0 && cell[1] > 0 && !cells[cell[0] - 1][cell[1] - 1] && !this.isOnWolf([cell[0] - 1, cell[1] - 1], wolf_cells)) {
       cells[cell[0] - 1][cell[1] - 1] = true;
     
-      const result: boolean = this.isPathToEndExists([cell[0] - 1, cell[1] - 1], wolf_cells, cells);
-      if(result) {
-        return true;
+      const result: [string, number] = this.isPathToEndExists([cell[0] - 1, cell[1] - 1], wolf_cells, cells);
+      if(result[0] !== "None") {
+        return ["tl", ++result[1]];
       }
     }
 
@@ -151,9 +159,9 @@ export class BrainService {
     if(cell[0] < 7 && cell[1] > 0 && !cells[cell[0] + 1][cell[1] - 1] && !this.isOnWolf([cell[0] + 1, cell[1] - 1], wolf_cells)) {
       cells[cell[0] + 1][cell[1] - 1] = true;
         
-      const result: boolean = this.isPathToEndExists([cell[0] + 1, cell[1] - 1], wolf_cells, cells);
-      if(result) {
-        return true;
+      const result: [string, number] = this.isPathToEndExists([cell[0] + 1, cell[1] - 1], wolf_cells, cells);
+      if(result[0] !== "None") {
+        return ["bl", ++result[1]];
       }
     }
 
@@ -162,14 +170,14 @@ export class BrainService {
     if(cell[0] < 7 && cell[1] < 7 && !cells[cell[0] + 1][cell[1] + 1] && !this.isOnWolf([cell[0] + 1, cell[1] + 1], wolf_cells)) {
       cells[cell[0] + 1][cell[1] + 1] = true;
             
-      const result: boolean = this.isPathToEndExists([cell[0] + 1, cell[1] + 1], wolf_cells, cells);
-      if(result) {
-        return true;
+      const result: [string, number] = this.isPathToEndExists([cell[0] + 1, cell[1] + 1], wolf_cells, cells);
+      if(result[0] !== "None") {
+        return ["br", ++result[1]];
       }
     }
 
 
-    return false;
+    return ["None", -1];
   }
 
 
