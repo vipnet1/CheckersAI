@@ -5,7 +5,6 @@ import { VerificationService } from '../verification.service';
   providedIn: 'root'
 })
 export class BrainService {
-  readonly WOLF_ROW_CELL_DIFF_POINTS: number = 2;
   public static readonly CUSTOM_INFINITY = 1000000; //not using Infinity but this so ai will take best decision, even when he knows he's gona lose
 
   constructor(private readonly verificationService: VerificationService) { }
@@ -31,7 +30,8 @@ export class BrainService {
     + this.get_rabbit_higher_row_points(rabbit_cell)
     + this.get_rabbit_pass_wolfes_points(rabbit_cell, wolf_cells)
     + this.get_wolfes_move_together_points(rabbit_cell, wolf_cells)
-    + this.get_wolfes_move_direction_points(wolf_cells);
+    + this.get_wolfes_move_direction_points(wolf_cells)
+    + this.get_rabbit_path_to_end_exists_points(rabbit_cell, wolf_cells);
   }
 
   private get_rabbit_move_direction_points(cells: string[][], rabbit_cell: [number, number]): number {
@@ -93,30 +93,94 @@ export class BrainService {
 
   // wolfes should try to stay closer on the row
   private get_wolfes_move_together_points(rabbit_cell: [number, number], wolf_cells: [number,number][]) {
-    let max_wolfes_on_row = 0;
-    let wolf_total_row_distances = 0;
+    let maxIdx = wolf_cells[0][0];
+    let minIdx = wolf_cells[0][0];
+    wolf_cells.forEach((wolf) => {
+      maxIdx = wolf[0] > maxIdx ? wolf[0] : maxIdx;
+      minIdx = wolf[0] < minIdx ? wolf[0] : minIdx;
+    })
 
-    const map = new Map();
-    for(const wolf of wolf_cells) {
-      if(map.has(wolf[0])) {
-        map.set(wolf[0], map.get(wolf[0]) + 1);
-        //console.log(map.get(wolf[0]))
-      }
-      else {
-        map.set(wolf[0], 1);
-      }
+    return Math.pow(maxIdx - minIdx, 2);
+  }
 
-      if(map.get(wolf[0]) > max_wolfes_on_row) max_wolfes_on_row = map.get(wolf[0])
+  private get_rabbit_path_to_end_exists_points(rabbit_cell: [number, number], wolf_cells: [number,number][]) {
 
-      for(const w of wolf_cells) {
-        wolf_total_row_distances += Math.abs(w[0] - wolf[0])
+    const cells: boolean[][] = new Array(8);
+    [...Array(8).keys()].forEach((y) => {
+      cells[y] = new Array(8);
+      [...Array(8).keys()].forEach((x) => {
+        cells[y][x] = false;
+      })
+    })
+
+    if(this.isPathToEndExists(rabbit_cell, wolf_cells, cells)) {
+      return 10000;
+    }
+
+    return 0;
+  }
+
+  private isPathToEndExists(cell: [number, number], wolf_cells: [number,number][], cells: boolean[][]): boolean {
+    if(cell[0] === 0) {
+      return true;
+    }
+
+    // top-right
+    if(cell[0] > 0 && cell[1] < 7 && !cells[cell[0] - 1][cell[1] + 1] && !this.isOnWolf([cell[0] - 1, cell[1] + 1], wolf_cells)) {
+      cells[cell[0] - 1][cell[1] + 1] = true;
+
+      const result: boolean = this.isPathToEndExists([cell[0] - 1, cell[1] + 1], wolf_cells, cells);
+      if(result) {
+        return true;
       }
     }
 
-    if(max_wolfes_on_row === 4 && rabbit_cell[0] > wolf_cells[0][0]) return -10000;
-    const wolf_row_points = -50 * max_wolfes_on_row;
 
-    return wolf_total_row_distances + wolf_row_points;
+    // top-left
+    if(cell[0] > 0 && cell[1] > 0 && !cells[cell[0] - 1][cell[1] - 1] && !this.isOnWolf([cell[0] - 1, cell[1] - 1], wolf_cells)) {
+      cells[cell[0] - 1][cell[1] - 1] = true;
+    
+      const result: boolean = this.isPathToEndExists([cell[0] - 1, cell[1] - 1], wolf_cells, cells);
+      if(result) {
+        return true;
+      }
+    }
+
+
+    // bottom-left
+    if(cell[0] < 7 && cell[1] > 0 && !cells[cell[0] + 1][cell[1] - 1] && !this.isOnWolf([cell[0] + 1, cell[1] - 1], wolf_cells)) {
+      cells[cell[0] + 1][cell[1] - 1] = true;
+        
+      const result: boolean = this.isPathToEndExists([cell[0] + 1, cell[1] - 1], wolf_cells, cells);
+      if(result) {
+        return true;
+      }
+    }
+
+
+    // bottom-right
+    if(cell[0] < 7 && cell[1] < 7 && !cells[cell[0] + 1][cell[1] + 1] && !this.isOnWolf([cell[0] + 1, cell[1] + 1], wolf_cells)) {
+      cells[cell[0] + 1][cell[1] + 1] = true;
+            
+      const result: boolean = this.isPathToEndExists([cell[0] + 1, cell[1] + 1], wolf_cells, cells);
+      if(result) {
+        return true;
+      }
+    }
+
+
+    return false;
+  }
+
+
+  private isOnWolf(cell: [number, number], wolf_cells: [number,number][]): boolean {
+    for(const wolf of wolf_cells) {
+      if(cell[0] === wolf[0] && cell[1] === wolf[1]) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
 }
