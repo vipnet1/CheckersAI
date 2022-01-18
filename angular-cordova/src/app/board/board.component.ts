@@ -11,6 +11,8 @@ import { VerificationService } from './services/verification.service';
 export class BoardComponent implements OnInit {
   cells: string[][] = [];
 
+  private readonly STATS_SERVER_URL: string = 'http://localhost:12345/stats';
+
   //last seleted human checker indexes
   checker_to_move: [number, number];
 
@@ -33,7 +35,8 @@ export class BoardComponent implements OnInit {
       this.aiService.set_ai_side(this.is_human_rabbit);
       this.is_human_rabbit = !this.is_human_rabbit;
       this.now_humans_turn = false;
-      fetch(`http://localhost:12345/stats?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}`)
+      console.log(process.env.STATS_SERVER_URL);
+      fetch(`${this.STATS_SERVER_URL}?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}`)
       .then(async response => {
         this.best_score_str = await response.text();
       });
@@ -45,7 +48,7 @@ export class BoardComponent implements OnInit {
         this.aiService.nr_steps_lookup = newValue;
       }
 
-      fetch(`http://localhost:12345/stats?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}`)
+      fetch(`${this.STATS_SERVER_URL}?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}`)
       .then(async response => {
         this.best_score_str = await response.text();
       });
@@ -70,7 +73,7 @@ export class BoardComponent implements OnInit {
     const game_state: number = this.gameService.check_game_state(rabbitMoves, allWolfesMoves);
     if(game_state !== 0) {
       if((game_state === 1 && this.is_human_rabbit) || (game_state === -1 && !this.is_human_rabbit)) {
-        await fetch(`http://localhost:12345/stats/set?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}&steps=${this.human_steps}`);
+        await fetch(`${this.STATS_SERVER_URL}/set?lookup=${this.aiService.nr_steps_lookup}&side=${this.is_human_rabbit ? 'rabbit' : 'wolfes'}&steps=${this.human_steps}`);
       }
 
       window.location.reload();
